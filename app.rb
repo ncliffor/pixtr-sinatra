@@ -32,11 +32,13 @@ post "/galleries" do
   redirect to("/")
 end
 
+get "/galleries/:id/edit" do
+  "Editing something"
+end
+
 get "/galleries/:id" do
   id = params[:id]
-  gallery = Gallery.find(id)
-
-  @name = gallery.name
+  @gallery = Gallery.find(id)
   @images = Image.where(gallery_id: id)
  
  erb :gallery
