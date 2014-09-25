@@ -3,24 +3,41 @@ if development?
   require "sinatra/reloader"
 end
 
-require "pg"
+require "active_record"
 
-database = PG.connect({ dbname: "photo_gallery"})
+ActiveRecord::Base.establish_connection(
+  adapter: "postgresql",
+  database: "photo_gallery"
+)
 
-GALLERIES = {
-  "cats" => ["colonel_meow.jpg", "grumpy_cat.png"],
-  "dogs" => ["shibe.png"]
-}
+class Gallery < ActiveRecord::Base
+end
+
+class Image < ActiveRecord::Base
+end
 
 get "/" do
-  galleries = database.exec_params("SELECT name FROM galleries")
-  @gallery_names = galleries.map {|gallery| gallery["name"]}
-  @galleries = GALLERIES
+  @galleries = Gallery.all 
   erb :home
 end
 
-get "/galleries/:name" do
- @name = params[:name]
- @images = GALLERIES[@name]
+get "/galleries/new" do
+  erb :new_gallery
+end
+
+post "/galleries" do
+  new_gallery_name = params[:gallery][:name]
+  Gallery.create(name: new_gallery_name)
+
+  redirect to("/")
+end
+
+get "/galleries/:id" do
+  id = params[:id]
+  gallery = Gallery.find(id)
+
+  @name = gallery.name
+  @images = Image.where(gallery_id: id)
+ 
  erb :gallery
 end
