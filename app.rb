@@ -71,3 +71,16 @@ post "/galleries/:id/images" do
   @gallery.images.create(params[:image])
   redirect to "/galleries/#{id}"
 end
+
+delete "/galleries/:id/images/:image_id" do
+  gallery = Gallery.find(params[:id])
+  image = gallery.images.find(params[:image_id])
+  image.destroy
+  redirect to "/galleries/#{gallery.id}"
+end
+
+get "/galleries/:id/images/:image_id/edit" do
+  gallery = Gallery.find(params[:id])
+  image = gallery.images.find(params[:image_id])
+
+end
